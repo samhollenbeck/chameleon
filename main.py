@@ -111,20 +111,19 @@ def ViewIdentityCards():
     print(" VIEW IDENTITY CARDS ".center(50, "-"))
 
     index = 1
-    for player in players:
-        if player.local == True:
-            print(str(index) + "." + " " + player.name)
-            index = index + 1
+    for player in GetLocalPlayers():
+        print(str(index) + "." + " " + player.name)
+        index = index + 1
 
     print("")
     choice = int(input("Please Choose: "))
 
     ClearTerminal()
-    title = " " + players[choice - 1].name.upper() + "'S IDENTITY CARD "
+    title = " " + GetLocalPlayers()[choice - 1].name.upper() + "'S IDENTITY CARD "
     print(title.center(50, "-"))
     print("")
 
-    if players[choice - 1].chameleon == True:
+    if GetLocalPlayers()[choice - 1].chameleon == True:
         print(" You are the chameleon.")
     else:
         print("You are not the chameleon. The term is #" + str(termIndex) + ".")
@@ -170,17 +169,27 @@ def AssignTermIndex():
     for char in chars:
         number = number * ord(char)
 
-    number = int(math.pow(number, (attemptIndex / 2.5)))
+    number = int(math.pow(number, (attemptIndex / (attemptIndex + 1)))) + attemptIndex
 
     index = number % termCount + 1
 
     global termIndex
     termIndex = index
 
+    print(termIndex)
+    print(number)
+
 def AssignChameleon():
     index = GamePhraseToIndex()
 
     players[index].setAsChameleon()
+
+def GetLocalPlayers():
+    locals = []
+    for player in players:
+        if player.local == True:
+            locals.append(player)
+    return locals
 
 def ClearTerminal():
     os.system('cls' if os.name=='nt' else 'clear')
@@ -188,7 +197,7 @@ def ClearTerminal():
 # VARIABLES
 players = []
 gamePhrase = ""
-attemptIndex = 1
+attemptIndex = 0
 termCount = 16
 termIndex = 0
 
